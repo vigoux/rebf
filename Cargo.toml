@@ -1,5 +1,5 @@
 [package]
-name = "bf_interpreter"
+name = "rebf"
 version = "0.1.0"
 authors = ["Thomas Vigouroux <tomvig38@gmail.com>"]
 edition = "2018"

@@ -1,4 +1,4 @@
-use bf_interpreter::{MachineState, AST};
+use rebf::{MachineState, AST};
 use std::fs;
 use std::env;
 
@@ -12,7 +12,7 @@ fn main() {
 
         let ast = AST::from(&mut instructions.chars());
         
-        machine.run(&ast);
+        machine.run(&ast).expect("Execution failed");
     } else {
         println!("Usage : {} [SOURCE_FILE]", args[0]);
     }

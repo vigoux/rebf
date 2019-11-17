@@ -1,5 +1,4 @@
-use bf_interpreter::MachineState;
-use bf_interpreter::AST;
+use rebf::{MachineState, AST};
 use std::fs;
 
 #[test]
