@@ -172,21 +172,21 @@ impl MachineState {
         Ok(&self.memory)
     }
 
-    pub fn run(&mut self, instructions: &AST) {
+    pub fn run(&mut self, instructions: &AST) -> io::Result<&Vec<u8>> {
         match instructions {
             AST::Instructions(operations, next) => {
                 for op in operations {
-                    self.apply(op).expect("An error occured");
+                    self.apply(op)?;
                 }
                 self.run(next)
             },
             AST::Loop(body, next) => {
                 while self.get_current() != 0 {
-                    self.run(body)
+                    self.run(body)?;
                 }
                 self.run(next)
             }
-            AST::EOF => {}
+            AST::EOF => Ok(&self.memory)
         }
     }
 }
