@@ -1,7 +1,7 @@
-use std::ops::{Index, IndexMut};
 use super::ast::*;
-use std::io::{self, prelude::*};
 use std::fmt;
+use std::io::{self, prelude::*};
+use std::ops::{Index, IndexMut};
 
 #[derive(Debug, PartialEq)]
 pub enum Direction {
@@ -21,7 +21,7 @@ pub enum Operation {
     Change(Computation),
     Print,
     Read,
-    Debug
+    Debug,
 }
 
 impl Operation {
@@ -33,7 +33,7 @@ impl Operation {
             Self::Change(Computation::Substract) => '-',
             Self::Print => '.',
             Self::Read => ',',
-            Self::Debug => '#'
+            Self::Debug => '#',
         }
     }
 
@@ -46,7 +46,7 @@ impl Operation {
             '.' => Some(Self::Print),
             ',' => Some(Self::Read),
             '#' => Some(Self::Debug),
-            _ => None
+            _ => None,
         }
     }
 }
@@ -59,7 +59,7 @@ impl fmt::Display for Operation {
 
 pub struct MachineState {
     pointer: usize,
-    memory: Vec<u8>
+    memory: Vec<u8>,
 }
 
 impl Index<usize> for MachineState {
@@ -77,11 +77,17 @@ impl IndexMut<usize> for MachineState {
 }
 
 impl fmt::Display for MachineState {
-
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         for (index, value) in self.memory.iter().enumerate() {
-            write!(f, " {:02X} {} ", value, if index == self.pointer { "<" } else { " " })?;
-            if index % 15 == 0 && index != 0 { write!(f, "\n")?; }
+            write!(
+                f,
+                " {:02X} {} ",
+                value,
+                if index == self.pointer { "<" } else { " " }
+            )?;
+            if index % 15 == 0 && index != 0 {
+                write!(f, "\n")?;
+            }
         }
 
         Ok(())
@@ -89,11 +95,10 @@ impl fmt::Display for MachineState {
 }
 
 impl MachineState {
-
     pub fn new() -> MachineState {
         MachineState {
-            pointer : 0,
-            memory : vec![0]
+            pointer: 0,
+            memory: vec![0],
         }
     }
 
@@ -107,13 +112,13 @@ impl MachineState {
                 if self.pointer != 0 {
                     self.pointer -= 1;
                 }
-            },
+            }
             Direction::Right => {
                 self.pointer += 1;
                 if self.pointer == self.memory.len() {
                     self.memory.push(0u8);
                 }
-            },
+            }
         };
     }
 
@@ -126,14 +131,14 @@ impl MachineState {
                 } else {
                     self[pointer] += 1;
                 }
-            },
+            }
             Computation::Substract => {
                 if self.get_current() == 0 {
                     self[pointer] = 255;
                 } else {
                     self[pointer] -= 1;
                 }
-            },
+            }
         }
     }
 
@@ -142,7 +147,7 @@ impl MachineState {
     }
 
     fn read(&mut self) -> io::Result<()> {
-        let mut input : [u8; 1] = [0];
+        let mut input: [u8; 1] = [0];
         io::stdin().read(&mut input)?;
 
         let pointer = self.pointer;
@@ -155,13 +160,13 @@ impl MachineState {
         match instr {
             Operation::Move(dir) => {
                 self.pointer_move(dir);
-            },
+            }
             Operation::Change(op) => {
                 self.change(op);
-            },
+            }
             Operation::Print => {
                 self.print();
-            },
+            }
             Operation::Read => {
                 self.read()?;
             }
@@ -179,23 +184,23 @@ impl MachineState {
                     self.apply(op)?;
                 }
                 self.run(next)
-            },
+            }
             AST::Loop(body, next) => {
                 while self.get_current() != 0 {
                     self.run(body)?;
                 }
                 self.run(next)
             }
-            AST::EOF => Ok(&self.memory)
+            AST::EOF => Ok(&self.memory),
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use super::Computation;
     use super::Direction;
+    use super::*;
 
     #[test]
     fn change_value() {

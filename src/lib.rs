@@ -1,3 +1,3 @@
 mod utils;
-pub use utils::machine::MachineState;
 pub use utils::ast::AST;
+pub use utils::machine::MachineState;

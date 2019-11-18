@@ -24,14 +24,13 @@ impl fmt::Display for AST {
                 write!(f, "]")?;
                 next.fmt(f)?;
             }
-            Self::EOF => {},
+            Self::EOF => {}
         }
         Ok(())
     }
 }
 
 impl AST {
-
     fn box_if_not_empty(ops: Vec<Operation>, ast: AST) -> AST {
         if ops.len() != 0 {
             AST::Instructions(ops, Box::from(ast))
@@ -41,18 +40,19 @@ impl AST {
     }
 
     pub fn from(program: &mut Chars) -> AST {
-
-        let mut operations_vec : Vec<Operation> = Vec::new();
+        let mut operations_vec: Vec<Operation> = Vec::new();
 
         while let Some(instr) = program.next() {
-
             if let Some(operation) = Operation::from(instr) {
                 operations_vec.push(operation);
             } else {
                 match instr {
                     '[' => {
-                        return AST::box_if_not_empty(operations_vec, AST::Loop(Box::from(AST::from(program)), Box::from(AST::from(program))))
-                    },
+                        return AST::box_if_not_empty(
+                            operations_vec,
+                            AST::Loop(Box::from(AST::from(program)), Box::from(AST::from(program))),
+                        )
+                    }
                     ']' => break,
                     _ => {}
                 }
@@ -81,14 +81,28 @@ mod tests {
     fn one_instruction() {
         let one = AST::from_string(String::from("."));
 
-        assert_eq!(one, AST::Instructions(vec![Operation::Print], Box::from(AST::EOF)));
+        assert_eq!(
+            one,
+            AST::Instructions(vec![Operation::Print], Box::from(AST::EOF))
+        );
     }
 
     #[test]
     fn multiple_instructions() {
         let mult = AST::from_string(String::from(".#.#"));
 
-        assert_eq!(mult, AST::Instructions(vec![Operation::Print, Operation::Debug, Operation::Print, Operation::Debug], Box::from(AST::EOF)))
+        assert_eq!(
+            mult,
+            AST::Instructions(
+                vec![
+                    Operation::Print,
+                    Operation::Debug,
+                    Operation::Print,
+                    Operation::Debug
+                ],
+                Box::from(AST::EOF)
+            )
+        )
     }
 
     #[test]
@@ -102,21 +116,29 @@ mod tests {
     fn prefixed_loop() {
         let pref_loop = AST::from_string(String::from("..[]"));
 
-        assert_eq!(pref_loop,
-                   AST::Instructions(vec![Operation::Print, Operation::Print],
-                        Box::from(AST::Loop(Box::from(AST::EOF),Box::from(AST::EOF)))));
+        assert_eq!(
+            pref_loop,
+            AST::Instructions(
+                vec![Operation::Print, Operation::Print],
+                Box::from(AST::Loop(Box::from(AST::EOF), Box::from(AST::EOF)))
+            )
+        );
     }
 
     #[test]
     fn simple_loop() {
         let simple_loop = AST::from_string(String::from("[..]"));
 
-        assert_eq!(simple_loop,
-                   AST::Loop(
-                       Box::from(AST::Instructions(vec![Operation::Print, Operation::Print],
-                                                  Box::from(AST::EOF))),
-                        Box::from(AST::EOF)
-                            ));
+        assert_eq!(
+            simple_loop,
+            AST::Loop(
+                Box::from(AST::Instructions(
+                    vec![Operation::Print, Operation::Print],
+                    Box::from(AST::EOF)
+                )),
+                Box::from(AST::EOF)
+            )
+        );
     }
 
     #[test]

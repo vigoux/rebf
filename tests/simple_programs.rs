@@ -10,7 +10,7 @@ fn hello_world() {
     let ast = AST::from(&mut instructions.chars());
 
     let memory = machine.run(&ast).expect("An error occured");
-    let checked : Vec<u8> = vec![0x00, 0x00, 0x48, 0x64, 0x57, 0x21, 0x0A];
+    let checked: Vec<u8> = vec![0x00, 0x00, 0x48, 0x64, 0x57, 0x21, 0x0A];
 
     for i in 0..checked.len() {
         assert_eq!(memory[i], checked[i]);
