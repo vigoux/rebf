@@ -203,6 +203,17 @@ mod tests {
     use super::*;
 
     #[test]
+    fn operation_valid() {
+        assert_eq!(Operation::from(Operation::Debug.value()), Some(Operation::Debug));
+        assert_eq!(Operation::from(Operation::Print.value()), Some(Operation::Print));
+        assert_eq!(Operation::from(Operation::Read.value()), Some(Operation::Read));
+        assert_eq!(Operation::from(Operation::Change(Computation::Add).value()), Some(Operation::Change(Computation::Add)));
+        assert_eq!(Operation::from(Operation::Change(Computation::Substract).value()), Some(Operation::Change(Computation::Substract)));
+        assert_eq!(Operation::from(Operation::Move(Direction::Left).value()), Some(Operation::Move(Direction::Left)));
+        assert_eq!(Operation::from(Operation::Move(Direction::Right).value()), Some(Operation::Move(Direction::Right)));
+    }
+
+    #[test]
     fn change_value() {
         let mut machine = MachineState::new();
 
